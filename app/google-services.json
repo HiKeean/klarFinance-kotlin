@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "763253278408",
+    "project_id": "klarfinance-22dbf",
+    "storage_bucket": "klarfinance-22dbf.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:763253278408:android:6769876b5086e09a14c7fd",
+        "android_client_info": {
+          "package_name": "com.klarfinance.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBKBRhfSX6b5aKn7u50mu1Ddde4Ns7MT9k"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

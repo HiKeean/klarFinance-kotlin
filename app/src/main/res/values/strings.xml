@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">KlarFinance</string>
+    <!-- Must match APPROVAL_NOTIFICATION_CHANNEL_ID in KlarFirebaseMessagingService.kt - used as
+         the fallback channel when the app is backgrounded/killed (FCM shows the notification
+         itself in that case, not our onMessageReceived). -->
+    <string name="approval_notification_channel_id" translatable="false">approval_status</string>
+</resources>

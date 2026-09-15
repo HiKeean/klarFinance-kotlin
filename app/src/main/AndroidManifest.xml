@@ -1,0 +1,87 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-feature android:name="android.hardware.camera.any" android:required="false" />
+    <!-- Android 13+ (API 33) requires runtime request for this, see MainActivity - manifest
+         declaration alone doesn't grant it. -->
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+
+    <!-- Location routine tracking (see core/location/) - strictly opt-in via a consent toggle
+         in Account, never requested/used unless the nasabah turns it on. ACCESS_BACKGROUND_LOCATION
+         is what lets LocationCaptureWorker (WorkManager) get a fix while the app isn't open - on
+         Android 11+ (API 30+) this can't be granted from the same runtime dialog as fine/coarse,
+         see LocationPermissionHelper. -->
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
+
+    <!-- Device app scoring (lihat core/scan/InstalledAppsScanner.kt) - Android 11+ (API 30+)
+         menyembunyikan hasil getPackageInfo untuk package lain kecuali dideklarasikan di sini
+         (atau lewat QUERY_ALL_PACKAGES, yang sengaja dihindari - kena scrutiny lebih ketat di
+         Play Store review). Daftar package sudah diverifikasi ke Play Store (2026-09-14) - harus
+         tetap sinkron 1:1 dengan PINJOL_PACKAGES/BANK_PACKAGES di InstalledAppsScanner.kt. -->
+    <queries>
+        <package android:name="com.finaccel.android" />
+        <package android:name="io.silvrr.installment" />
+        <package android:name="com.adakami.dana.kredit.pinjaman" />
+        <package android:name="com.kreditpintar" />
+        <package android:name="com.julofinance.juloapp" />
+        <package android:name="com.fintopia.idnEasycash.google" />
+        <package android:name="com.indodana.app" />
+        <package android:name="com.loan.cash.credit.easy.kilat.cepat.pinjam.uang.dana.rupiah" />
+        <package android:name="com.pinjamango" />
+        <package android:name="id.maucash.app" />
+        <package android:name="com.cmcm.uangme" />
+        <package android:name="com.yinshan.program.banda" />
+        <package android:name="com.bca" />
+        <package android:name="com.bca.mybca.omni.android" />
+        <package android:name="id.co.bri.brimo" />
+        <package android:name="id.bmri.livin" />
+        <package android:name="src.com.bni" />
+        <package android:name="com.btpn.dc" />
+        <package android:name="net.myinfosys.PermataMobileX" />
+        <package android:name="com.gojek.gopay" />
+    </queries>
+
+    <application
+        android:name=".KlarFinanceApp"
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:networkSecurityConfig="@xml/network_security_config"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.KlarFinance">
+
+        <activity
+            android:name=".MainActivity"
+            android:exported="true"
+            android:theme="@style/Theme.KlarFinance">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <service
+            android:name=".core.notification.KlarFirebaseMessagingService"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+            </intent-filter>
+        </service>
+
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_channel_id"
+            android:value="@string/approval_notification_channel_id" />
+
+        <!-- ML Kit Barcode Scanning (fitur Bayar QRIS, lihat presentation/qris/scan/) - triggers
+             model download saat install dari Play Store, bukan wajib tapi menghindari delay
+             download-on-first-use. -->
+        <meta-data
+            android:name="com.google.mlkit.vision.DEPENDENCIES"
+            android:value="barcode" />
+    </application>
+
+</manifest>
