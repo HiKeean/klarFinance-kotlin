@@ -176,10 +176,6 @@ dependencies {
 
     implementation(libs.okhttp.core)
     implementation(libs.okhttp.logging.interceptor)
-    // Real Chucker cuma di debug build - release pakai library-no-op (API sama, no-op) supaya
-    // gak perlu ngondisikan pemasangan ChuckerInterceptor di NetworkModule secara manual.
-    debugImplementation(libs.chucker)
-    releaseImplementation(libs.chucker.no.op)
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.kotlinx.coroutines.android)
 
