@@ -37,48 +37,6 @@ untuk `BuildConfig` field HMAC. **Bukan** dibaca untuk signing config release (l
 - Emulator → host lokal: `BASE_URL=http://10.0.2.2:8080/`
 - Device fisik di jaringan yang sama: `BASE_URL=http://<IP-LAN-mesin-dev>:8080/`
 
-## Cara dapat APK / AAB
-
-### APK debug (paling cepat, buat testing/share manual)
-
-```bash
-cd kotlin
-./gradlew assembleDebug
-```
-
-Output: `app/build/outputs/apk/debug/app-debug.apk` — sudah ditandatangani otomatis pakai
-debug keystore bawaan Android, tinggal `adb install` atau kirim langsung ke HP tester. Tidak
-butuh setup apa pun di luar `.env`.
-
-### AAB release (buat upload ke Play Console)
-
-AAB release **harus ditandatangani** dengan key release (`keys/keys-ps-20260914.jks` sudah ada
-di repo, tapi `keystore.properties` masih kosong/template). Isi dulu
-`kotlin/keystore.properties` (file ini gitignored, aman diisi lokal):
-
-```properties
-storeFile=keys/keys-ps-20260914.jks
-storePassword=<password keystore>
-keyAlias=<alias key>
-keyPassword=<password key>
-```
-
-Baru jalankan:
-
-```bash
-./gradlew bundleRelease
-```
-
-Output: `app/build/outputs/bundle/release/app-release.aab`.
-
-> Kalau `keystore.properties` dibiarkan kosong, `bundleRelease` tetap jalan tapi hasilnya
-> **AAB tanpa signature** — tidak bisa diupload ke Play Console. Lihat kondisi
-> `hasReleaseSigning` / `signingConfig` di `app/build.gradle.kts`.
-
-Butuh APK release (bukan AAB) buat sideload/testing internal? `./gradlew assembleRelease`
-dengan `keystore.properties` yang sama, outputnya di `app/build/outputs/apk/release/`.
-
-
 
 ## Struktur
 
