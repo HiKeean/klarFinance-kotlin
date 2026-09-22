@@ -78,12 +78,7 @@ Output: `app/build/outputs/bundle/release/app-release.aab`.
 Butuh APK release (bukan AAB) buat sideload/testing internal? `./gradlew assembleRelease`
 dengan `keystore.properties` yang sama, outputnya di `app/build/outputs/apk/release/`.
 
-### Lewat CI?
 
-Belum ada — `.github/workflows/` saat ini cuma punya workflow untuk backend, frontend,
-webadmin, dan qris-generator. Build APK/AAB untuk sekarang masih manual di mesin dev
-(env var `RELEASE_KEYSTORE_PASSWORD` / `RELEASE_KEY_ALIAS` / `RELEASE_KEY_PASSWORD` di
-`build.gradle.kts` sudah disiapkan untuk skenario CI nanti, tapi workflow-nya belum dibuat).
 
 ## Struktur
 
