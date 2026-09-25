@@ -2,6 +2,7 @@ package com.klarfinance.app.presentation.login
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.klarfinance.app.domain.model.OtpChannel
 import com.klarfinance.app.domain.repository.VerifiedPhoneRepository
 import com.klarfinance.app.domain.usecase.CheckPhoneRegisteredUseCase
 import com.klarfinance.app.domain.usecase.RequestOtpUseCase
@@ -26,8 +27,9 @@ class LoginViewModel @Inject constructor(
     private val _uiState = MutableStateFlow(LoginUiState())
     val uiState: StateFlow<LoginUiState> = _uiState.asStateFlow()
 
-    private val _otpRequested = MutableSharedFlow<String>()
-    val otpRequested: SharedFlow<String> = _otpRequested.asSharedFlow()
+    /** Phone + channel OTP yang dipakai backend (SMS kalau WhatsApp gagal terkirim). */
+    private val _otpRequested = MutableSharedFlow<Pair<String, OtpChannel>>()
+    val otpRequested: SharedFlow<Pair<String, OtpChannel>> = _otpRequested.asSharedFlow()
 
     /** Phone already had OTP verified recently (see [VerifiedPhoneRepository]) AND is not
      * registered yet - skip straight past the OTP screen into registration. */
@@ -63,9 +65,9 @@ class LoginViewModel @Inject constructor(
             }
 
             requestOtpUseCase(fullPhone)
-                .onSuccess {
+                .onSuccess { channel ->
                     _uiState.update { it.copy(isLoading = false) }
-                    _otpRequested.emit(fullPhone)
+                    _otpRequested.emit(fullPhone to channel)
                 }
                 .onFailure { throwable ->
                     _uiState.update {

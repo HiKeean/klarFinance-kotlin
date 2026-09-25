@@ -13,6 +13,8 @@ import com.klarfinance.app.data.dto.ProfileResponseDto
 import com.klarfinance.app.data.dto.RefreshTokenRequestDto
 import com.klarfinance.app.data.dto.RegisterResponseDataDto
 import com.klarfinance.app.data.dto.RequestOtpRequestDto
+import com.klarfinance.app.data.dto.RequestOtpResponseDataDto
+import com.klarfinance.app.data.dto.VerifyFirebasePhoneRequestDto
 import com.klarfinance.app.data.dto.VerifyOtpRequestDto
 import com.klarfinance.app.data.dto.VerifyPasswordRequestDto
 import com.klarfinance.app.data.local.LoanHistoryDao
@@ -24,6 +26,7 @@ import com.klarfinance.app.domain.model.AccountProfile
 import com.klarfinance.app.domain.model.AccountState
 import com.klarfinance.app.domain.model.Cached
 import com.klarfinance.app.domain.model.LoginResult
+import com.klarfinance.app.domain.model.OtpChannel
 import com.klarfinance.app.domain.model.RegisterResult
 import com.klarfinance.app.domain.repository.AuthRepository
 import kotlinx.coroutines.suspendCancellableCoroutine
@@ -43,8 +46,18 @@ class AuthRepositoryImpl @Inject constructor(
     private val referralSummaryDao: ReferralSummaryDao,
 ) : AuthRepository {
 
-    override suspend fun requestOtp(phone: String): Result<Unit> = runCatching {
-        apiService.post<Unit, RequestOtpRequestDto>("api/v1/auth/request-otp", RequestOtpRequestDto(phone))
+    /** Backend balas channel FIREBASE_SMS kalau kirim WhatsApp gagal - app lanjut OTP via SMS Firebase. */
+    override suspend fun requestOtp(phone: String): Result<OtpChannel> = runCatching {
+        val response = apiService.post<RequestOtpResponseDataDto, RequestOtpRequestDto>(
+            "api/v1/auth/request-otp", RequestOtpRequestDto(phone),
+        )
+        if (response.data?.channel == "FIREBASE_SMS") OtpChannel.SMS else OtpChannel.WHATSAPP
+    }
+
+    override suspend fun verifyFirebasePhone(phone: String, idToken: String): Result<Unit> = runCatching {
+        apiService.post<Unit, VerifyFirebasePhoneRequestDto>(
+            "api/v1/auth/verify-firebase-phone", VerifyFirebasePhoneRequestDto(phone, idToken),
+        )
         Unit
     }
 

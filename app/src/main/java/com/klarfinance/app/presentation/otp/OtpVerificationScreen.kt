@@ -1,5 +1,8 @@
 package com.klarfinance.app.presentation.otp
 
+import android.app.Activity
+import android.content.Context
+import android.content.ContextWrapper
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -27,11 +30,13 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.klarfinance.app.core.theme.KlarTeal
+import com.klarfinance.app.domain.model.OtpChannel
 import com.klarfinance.app.presentation.components.OtpInputField
 
 @Composable
@@ -42,7 +47,11 @@ fun OtpVerificationScreen(
     viewModel: OtpViewModel = hiltViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val activity = LocalContext.current.findActivity()
 
+    LaunchedEffect(uiState.smsSendPending) {
+        if (uiState.smsSendPending && activity != null) viewModel.sendSmsCode(activity)
+    }
     LaunchedEffect(Unit) {
         viewModel.otpVerified.collect { phone -> onVerified(phone) }
     }
@@ -56,7 +65,14 @@ fun OtpVerificationScreen(
         onOtpChange = viewModel::onOtpChange,
         onVerifyClick = viewModel::onVerifyClick,
         onResendClick = viewModel::onResendClick,
+        onSwitchToSmsClick = viewModel::onSwitchToSmsClick,
     )
+}
+
+private tailrec fun Context.findActivity(): Activity? = when (this) {
+    is Activity -> this
+    is ContextWrapper -> baseContext.findActivity()
+    else -> null
 }
 
 @Composable
@@ -66,6 +82,7 @@ private fun OtpVerificationContent(
     onOtpChange: (String) -> Unit,
     onVerifyClick: () -> Unit,
     onResendClick: () -> Unit,
+    onSwitchToSmsClick: () -> Unit,
 ) {
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background,
@@ -109,7 +126,11 @@ private fun OtpVerificationContent(
             )
             Spacer(modifier = Modifier.height(8.dp))
             Text(
-                text = "Enter the 6-digit code sent to your phone",
+                text = if (uiState.channel == OtpChannel.SMS) {
+                    "Enter the 6-digit code sent via SMS"
+                } else {
+                    "Enter the 6-digit code sent to your WhatsApp"
+                },
                 style = MaterialTheme.typography.bodyLarge,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 textAlign = TextAlign.Center,
@@ -129,6 +150,16 @@ private fun OtpVerificationContent(
                 canResend = uiState.canResend,
                 onResendClick = onResendClick,
             )
+
+            if (uiState.canSwitchToSms) {
+                TextButton(onClick = onSwitchToSmsClick) {
+                    Text(
+                        "Didn't get the code? Send via SMS",
+                        color = KlarTeal,
+                        style = MaterialTheme.typography.bodyMedium,
+                    )
+                }
+            }
 
             uiState.errorMessage?.let { message ->
                 Spacer(modifier = Modifier.height(16.dp))

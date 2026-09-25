@@ -15,6 +15,8 @@ import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 import com.klarfinance.app.MainActivity
 import com.klarfinance.app.R
+import com.klarfinance.app.core.call.IncomingCall
+import com.klarfinance.app.core.call.IncomingCallNotifier
 import com.klarfinance.app.core.session.SessionManager
 import com.klarfinance.app.domain.repository.AuthRepository
 import dagger.hilt.android.AndroidEntryPoint
@@ -55,6 +57,13 @@ class KlarFirebaseMessagingService : FirebaseMessagingService() {
 
     override fun onMessageReceived(message: RemoteMessage) {
         super.onMessageReceived(message)
+
+        // Panggilan AI agent deskcall (demo, tombol Call di NPL Report webadmin) - data-only push,
+        // layar panggilan ditampilkan sendiri; push basi (lewat batas dering) diabaikan.
+        IncomingCall.fromPushData(message.data)?.let { call ->
+            if (!call.isExpired()) IncomingCallNotifier.show(this, call)
+            return
+        }
 
         // Data payload is delivered regardless of app state (foreground/background), unlike
         // the notification{} block which the system tray swallows itself when backgrounded -

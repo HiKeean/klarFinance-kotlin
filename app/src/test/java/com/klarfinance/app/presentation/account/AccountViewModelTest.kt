@@ -6,6 +6,7 @@ import com.klarfinance.app.core.session.SecureTokenStore
 import com.klarfinance.app.core.session.SessionManager
 import com.klarfinance.app.domain.model.AccountProfile
 import com.klarfinance.app.domain.model.AccountState
+import com.klarfinance.app.domain.model.Cached
 import com.klarfinance.app.domain.usecase.ChangePasswordUseCase
 import com.klarfinance.app.domain.usecase.GetLocationConsentUseCase
 import com.klarfinance.app.domain.usecase.GetProfileUseCase
@@ -72,7 +73,7 @@ class AccountViewModelTest {
 
     @Test
     fun `init loads profile and location consent`() = runTest {
-        coEvery { getProfileUseCase() } returns Result.success(profile)
+        coEvery { getProfileUseCase() } returns Result.success(Cached(profile, isFromCache = false))
 
         val viewModel = createViewModel()
 
@@ -92,7 +93,7 @@ class AccountViewModelTest {
 
     @Test
     fun `onLocationConsentEnabled schedules location and updates state on success`() = runTest {
-        coEvery { getProfileUseCase() } returns Result.success(profile)
+        coEvery { getProfileUseCase() } returns Result.success(Cached(profile, isFromCache = false))
         val viewModel = createViewModel()
         coEvery { setLocationConsentUseCase(true) } returns Result.success(Unit)
 
@@ -105,7 +106,7 @@ class AccountViewModelTest {
 
     @Test
     fun `onLocationConsentEnabled logs failure without a snackbar`() = runTest {
-        coEvery { getProfileUseCase() } returns Result.success(profile)
+        coEvery { getProfileUseCase() } returns Result.success(Cached(profile, isFromCache = false))
         val viewModel = createViewModel()
         coEvery { setLocationConsentUseCase(true) } returns Result.failure(IllegalStateException("boom"))
 
@@ -119,7 +120,7 @@ class AccountViewModelTest {
 
     @Test
     fun `onLocationConsentDisabled cancels the scheduler on success`() = runTest {
-        coEvery { getProfileUseCase() } returns Result.success(profile)
+        coEvery { getProfileUseCase() } returns Result.success(Cached(profile, isFromCache = false))
         coEvery { getLocationConsentUseCase() } returns Result.success(true)
         val viewModel = createViewModel()
         coEvery { setLocationConsentUseCase(false) } returns Result.success(Unit)
@@ -132,7 +133,7 @@ class AccountViewModelTest {
 
     @Test
     fun `onLocationConsentDisabled emits a snackbar on failure`() = runTest {
-        coEvery { getProfileUseCase() } returns Result.success(profile)
+        coEvery { getProfileUseCase() } returns Result.success(Cached(profile, isFromCache = false))
         coEvery { getLocationConsentUseCase() } returns Result.success(true)
         val viewModel = createViewModel()
         coEvery { setLocationConsentUseCase(false) } returns Result.failure(IllegalStateException("Gagal menonaktifkan lokasi"))
@@ -145,7 +146,7 @@ class AccountViewModelTest {
 
     @Test
     fun `onLocationPermissionDenied logs a failure`() = runTest {
-        coEvery { getProfileUseCase() } returns Result.success(profile)
+        coEvery { getProfileUseCase() } returns Result.success(Cached(profile, isFromCache = false))
         val viewModel = createViewModel()
 
         viewModel.onLocationPermissionDenied()
@@ -155,7 +156,7 @@ class AccountViewModelTest {
 
     @Test
     fun `onLogoutClick logs out and emits loggedOut`() = runTest {
-        coEvery { getProfileUseCase() } returns Result.success(profile)
+        coEvery { getProfileUseCase() } returns Result.success(Cached(profile, isFromCache = false))
         val viewModel = createViewModel()
         coEvery { logoutUseCase() } returns Result.success(Unit)
 
@@ -168,7 +169,7 @@ class AccountViewModelTest {
 
     @Test
     fun `onSubmitChangePassword fails fast when confirmation does not match`() = runTest {
-        coEvery { getProfileUseCase() } returns Result.success(profile)
+        coEvery { getProfileUseCase() } returns Result.success(Cached(profile, isFromCache = false))
         val viewModel = createViewModel()
         viewModel.onOldPasswordChange("oldpass1")
         viewModel.onNewPasswordChange("newpass1")
@@ -182,7 +183,7 @@ class AccountViewModelTest {
 
     @Test
     fun `onSubmitChangePassword succeeds and resets the form`() = runTest {
-        coEvery { getProfileUseCase() } returns Result.success(profile)
+        coEvery { getProfileUseCase() } returns Result.success(Cached(profile, isFromCache = false))
         val viewModel = createViewModel()
         viewModel.onOldPasswordChange("oldpass1")
         viewModel.onNewPasswordChange("newpass1")
@@ -198,7 +199,7 @@ class AccountViewModelTest {
 
     @Test
     fun `onSubmitChangePassword sets error on failure`() = runTest {
-        coEvery { getProfileUseCase() } returns Result.success(profile)
+        coEvery { getProfileUseCase() } returns Result.success(Cached(profile, isFromCache = false))
         val viewModel = createViewModel()
         viewModel.onOldPasswordChange("oldpass1")
         viewModel.onNewPasswordChange("newpass1")
@@ -213,7 +214,7 @@ class AccountViewModelTest {
 
     @Test
     fun `onToggleChangePassword clears the form fields`() = runTest {
-        coEvery { getProfileUseCase() } returns Result.success(profile)
+        coEvery { getProfileUseCase() } returns Result.success(Cached(profile, isFromCache = false))
         val viewModel = createViewModel()
         viewModel.onOldPasswordChange("abc")
 

@@ -1,4 +1,5 @@
-<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.CAMERA" />
@@ -6,6 +7,14 @@
     <!-- Android 13+ (API 33) requires runtime request for this, see MainActivity - manifest
          declaration alone doesn't grant it. -->
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+
+    <!-- Panggilan AI agent deskcall (demo) - lihat presentation/call/DeskcallCallActivity.
+         RECORD_AUDIO diminta saat nasabah menekan Angkat; USE_FULL_SCREEN_INTENT untuk layar
+         panggilan masuk di lock screen (Android 14+ bisa dicabut user/Play policy - fallback-nya
+         heads-up notification dengan tombol Angkat/Tolak). -->
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
+    <uses-permission android:name="android.permission.USE_FULL_SCREEN_INTENT" />
 
     <!-- Location routine tracking (see core/location/) - strictly opt-in via a consent toggle
          in Account, never requested/used unless the nasabah turns it on. ACCESS_BACKGROUND_LOCATION
@@ -64,6 +73,15 @@
             </intent-filter>
         </activity>
 
+        <activity
+            android:name=".presentation.call.DeskcallCallActivity"
+            android:configChanges="orientation|screenSize|screenLayout|keyboardHidden"
+            android:excludeFromRecents="true"
+            android:exported="false"
+            android:launchMode="singleTop"
+            android:taskAffinity=""
+            android:theme="@style/Theme.KlarFinance" />
+
         <service
             android:name=".core.notification.KlarFirebaseMessagingService"
             android:exported="false">
@@ -82,6 +100,20 @@
         <meta-data
             android:name="com.google.mlkit.vision.DEPENDENCIES"
             android:value="barcode" />
+
+        <!-- KlarFinanceApp implements Configuration.Provider (HiltWorkerFactory) - default
+             WorkManagerInitializer harus dimatikan, kalau tidak WorkManager ke-init pakai
+             konfigurasi default dan Hilt Worker (LocationCaptureWorker) gagal dibuat. -->
+        <provider
+            android:name="androidx.startup.InitializationProvider"
+            android:authorities="${applicationId}.androidx-startup"
+            android:exported="false"
+            tools:node="merge">
+            <meta-data
+                android:name="androidx.work.WorkManagerInitializer"
+                android:value="androidx.startup"
+                tools:node="remove" />
+        </provider>
     </application>
 
 </manifest>

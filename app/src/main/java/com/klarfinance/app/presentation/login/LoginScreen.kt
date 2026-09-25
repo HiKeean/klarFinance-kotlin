@@ -41,12 +41,13 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.klarfinance.app.core.theme.KlarTeal
+import com.klarfinance.app.domain.model.OtpChannel
 
 private val availableCountryCodes = listOf("+62", "+65", "+60", "+1")
 
 @Composable
 fun LoginScreen(
-    onOtpRequested: (phone: String) -> Unit,
+    onOtpRequested: (phone: String, channel: OtpChannel) -> Unit,
     onAlreadyVerified: (phone: String) -> Unit,
     onNeedsPasswordLogin: (phone: String) -> Unit,
     viewModel: LoginViewModel = hiltViewModel(),
@@ -54,7 +55,7 @@ fun LoginScreen(
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
     LaunchedEffect(Unit) {
-        viewModel.otpRequested.collect { phone -> onOtpRequested(phone) }
+        viewModel.otpRequested.collect { (phone, channel) -> onOtpRequested(phone, channel) }
     }
     LaunchedEffect(Unit) {
         viewModel.alreadyVerified.collect { phone -> onAlreadyVerified(phone) }

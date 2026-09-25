@@ -1,6 +1,7 @@
 package com.klarfinance.app.presentation.login
 
 import app.cash.turbine.test
+import com.klarfinance.app.domain.model.OtpChannel
 import com.klarfinance.app.domain.repository.VerifiedPhoneRepository
 import com.klarfinance.app.domain.usecase.CheckPhoneRegisteredUseCase
 import com.klarfinance.app.domain.usecase.RequestOtpUseCase
@@ -56,11 +57,11 @@ class LoginViewModelTest {
     @Test
     fun `onContinueClick requests otp and emits otpRequested on success when not recently verified`() = runTest {
         coEvery { verifiedPhoneRepository.isRecentlyVerified(fullPhone) } returns false
-        coEvery { requestOtpUseCase(fullPhone) } returns Result.success(Unit)
+        coEvery { requestOtpUseCase(fullPhone) } returns Result.success(OtpChannel.WHATSAPP)
 
         viewModel.otpRequested.test {
             viewModel.onContinueClick()
-            assertEquals(fullPhone, awaitItem())
+            assertEquals(fullPhone to OtpChannel.WHATSAPP, awaitItem())
         }
         assertFalse(viewModel.uiState.value.isLoading)
     }

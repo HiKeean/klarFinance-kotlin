@@ -200,6 +200,10 @@ dependencies {
 
     implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.messaging.ktx)
+    // OTP via SMS (Firebase Phone Auth) - fallback kalau WhatsApp gagal, lihat core/auth/
+    implementation(libs.firebase.auth)
+    // Panggilan AI agent deskcall (demo) - join room LiveKit, lihat presentation/call/
+    implementation(libs.livekit.android)
 
     implementation(libs.androidx.work.runtime.ktx)
     implementation(libs.androidx.hilt.work)

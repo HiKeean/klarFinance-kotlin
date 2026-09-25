@@ -482,7 +482,7 @@ private fun SecurityStatusCard(
                 )
                 Spacer(modifier = Modifier.size(8.dp))
                 Text(
-                    text = if (isFullyProtected) "Aman sentosa!" else "Dikit lagi got!",
+                    text = if (isFullyProtected) "Akunmu sudah aman terproteksi" else "Ayo Lengkapi Proteksimu",
                     style = MaterialTheme.typography.bodyMedium,
                     color = Color.White,
                 )

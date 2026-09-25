@@ -18,6 +18,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.klarfinance.app.domain.model.AccountState
 import com.klarfinance.app.domain.model.FeatureCategoryKey
+import com.klarfinance.app.domain.model.OtpChannel
 import com.klarfinance.app.presentation.account.AccountScreen
 import com.klarfinance.app.presentation.allfeatures.AllFeaturesScreen
 import com.klarfinance.app.presentation.bills.BillsScreen
@@ -71,6 +72,7 @@ fun KlarNavHost(navController: NavHostController = rememberNavController()) {
             val viewModel = hiltViewModel<HomeViewModel>()
             val accountState by viewModel.accountState.collectAsStateWithLifecycle()
             val limitSummary by viewModel.limitSummary.collectAsStateWithLifecycle()
+            val userName by viewModel.userName.collectAsStateWithLifecycle()
             // Home instance ini tetap hidup di backstack selama alur Ajukan Pinjaman/QRIS (push,
             // bukan popUpTo Home) - refresh kotak plafond tiap balik ke Home (termasuk begitu
             // pinjaman auto-cair atau QRIS selesai), lihat HomeViewModel.onResume().
@@ -87,6 +89,7 @@ fun KlarNavHost(navController: NavHostController = rememberNavController()) {
                 onSectionMoreClick = { key -> navController.navigate(Screen.AllFeatures.createRoute(scrollTo = key)) },
                 accountState = accountState,
                 limitSummary = limitSummary,
+                userName = userName,
             )
         }
 
@@ -178,8 +181,8 @@ fun KlarNavHost(navController: NavHostController = rememberNavController()) {
 
         composable(Screen.Login.route) {
             LoginScreen(
-                onOtpRequested = { phone ->
-                    navController.navigate(Screen.OtpVerification.createRoute(phone))
+                onOtpRequested = { phone, channel ->
+                    navController.navigate(Screen.OtpVerification.createRoute(phone, channel))
                 },
                 onAlreadyVerified = { phone ->
                     navController.navigate(Screen.RegisterGraph.createRoute(phone)) {
@@ -194,7 +197,13 @@ fun KlarNavHost(navController: NavHostController = rememberNavController()) {
 
         composable(
             route = Screen.OtpVerification.route,
-            arguments = listOf(navArgument(Screen.OtpVerification.ARG_PHONE) { type = NavType.StringType }),
+            arguments = listOf(
+                navArgument(Screen.OtpVerification.ARG_PHONE) { type = NavType.StringType },
+                navArgument(Screen.OtpVerification.ARG_CHANNEL) {
+                    type = NavType.StringType
+                    defaultValue = OtpChannel.WHATSAPP.name
+                },
+            ),
         ) {
             OtpVerificationScreen(
                 onBackClick = { navController.popBackStack() },

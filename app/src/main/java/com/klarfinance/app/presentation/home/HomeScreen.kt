@@ -103,6 +103,7 @@ fun HomeScreen(
     onSectionMoreClick: (FeatureCategoryKey) -> Unit = {},
     accountState: AccountState = AccountState.GUEST,
     limitSummary: LimitSummary? = null,
+    userName: String? = null,
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
@@ -204,7 +205,7 @@ fun HomeScreen(
 
             Spacer(modifier = Modifier.height(24.dp))
             Text(
-                text = "Good Morning, User",
+                text = if (userName.isNullOrBlank()) "Hi KlarFams" else "Hi KlarFams, $userName",
                 style = MaterialTheme.typography.headlineSmall,
                 color = MaterialTheme.colorScheme.onBackground,
             )

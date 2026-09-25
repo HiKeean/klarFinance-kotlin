@@ -8,6 +8,17 @@ data class RequestOtpRequestDto(
 )
 
 @Serializable
+data class RequestOtpResponseDataDto(
+    val channel: String? = null,
+)
+
+@Serializable
+data class VerifyFirebasePhoneRequestDto(
+    val phone: String,
+    val idToken: String,
+)
+
+@Serializable
 data class VerifyOtpRequestDto(
     val phone: String,
     val otp: String,

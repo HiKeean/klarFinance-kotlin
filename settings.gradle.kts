@@ -11,6 +11,12 @@ dependencyResolutionManagement {
     repositories {
         google()
         mavenCentral()
+        // LiveKit Android SDK (panggilan deskcall) butuh audioswitch dari JitPack - dibatasi ke
+        // group itu saja supaya dependency lain tidak pernah di-resolve dari JitPack.
+        maven {
+            url = uri("https://jitpack.io")
+            content { includeGroup("com.github.davidliu") }
+        }
     }
 }
 

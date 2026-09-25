@@ -12,8 +12,8 @@ import javax.inject.Inject
 class KlarFinanceApp : Application(), Configuration.Provider {
 
     /** Lets Hilt-injected Workers (see LocationCaptureWorker) get constructor dependencies -
-     * WorkManager's default initializer auto-detects this Configuration.Provider implementation
-     * on startup, no manifest changes needed. */
+     * WorkManager is initialized on demand from this Configuration.Provider; the default
+     * WorkManagerInitializer is removed in AndroidManifest.xml (otherwise it wins and ignores this). */
     @Inject
     lateinit var workerFactory: HiltWorkerFactory
 

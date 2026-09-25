@@ -21,12 +21,12 @@ class CheckPhoneRegisteredUseCaseTest {
 
     @Test
     fun `non-digit characters are stripped before delegating`() = runTest {
-        coEvery { repository.isPhoneRegistered("081234567890") } returns Result.success(true)
+        coEvery { repository.isPhoneRegistered("6281234567890") } returns Result.success(true)
 
         val result = useCase("+62 812-3456-7890")
 
         assertEquals(Result.success(true), result)
-        coVerify(exactly = 1) { repository.isPhoneRegistered("081234567890") }
+        coVerify(exactly = 1) { repository.isPhoneRegistered("6281234567890") }
     }
 
     @Test

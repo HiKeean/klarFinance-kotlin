@@ -1,5 +1,6 @@
 package com.klarfinance.app.presentation.history
 
+import com.klarfinance.app.domain.model.Cached
 import com.klarfinance.app.domain.model.LoanHistoryItem
 import com.klarfinance.app.domain.model.LoanHistoryStatus
 import com.klarfinance.app.domain.model.LoanHistoryType
@@ -48,7 +49,7 @@ class HistoryViewModelTest {
 
     @Test
     fun `init loads history successfully`() = runTest {
-        coEvery { getLoanHistoryUseCase() } returns Result.success(listOf(item()))
+        coEvery { getLoanHistoryUseCase() } returns Result.success(Cached(listOf(item()), isFromCache = false))
 
         val viewModel = createViewModel()
 
@@ -69,7 +70,7 @@ class HistoryViewModelTest {
 
     @Test
     fun `onInstallmentToggled adds and removes installment numbers`() = runTest {
-        coEvery { getLoanHistoryUseCase() } returns Result.success(listOf(item()))
+        coEvery { getLoanHistoryUseCase() } returns Result.success(Cached(listOf(item()), isFromCache = false))
         val viewModel = createViewModel()
 
         viewModel.onInstallmentToggled(1)
@@ -84,7 +85,7 @@ class HistoryViewModelTest {
 
     @Test
     fun `resetPaymentSelection clears selection and error`() = runTest {
-        coEvery { getLoanHistoryUseCase() } returns Result.success(listOf(item()))
+        coEvery { getLoanHistoryUseCase() } returns Result.success(Cached(listOf(item()), isFromCache = false))
         val viewModel = createViewModel()
         viewModel.onInstallmentToggled(1)
 
@@ -96,7 +97,7 @@ class HistoryViewModelTest {
 
     @Test
     fun `submitPayment sums selected unpaid installments and replaces the updated item on success`() = runTest {
-        coEvery { getLoanHistoryUseCase() } returns Result.success(listOf(item(loanId = 1)))
+        coEvery { getLoanHistoryUseCase() } returns Result.success(Cached(listOf(item(loanId = 1)), isFromCache = false))
         val viewModel = createViewModel()
         viewModel.onInstallmentToggled(1)
         viewModel.onInstallmentToggled(2)
@@ -114,7 +115,7 @@ class HistoryViewModelTest {
 
     @Test
     fun `submitPayment sets paymentErrorMessage on failure`() = runTest {
-        coEvery { getLoanHistoryUseCase() } returns Result.success(listOf(item(loanId = 1)))
+        coEvery { getLoanHistoryUseCase() } returns Result.success(Cached(listOf(item(loanId = 1)), isFromCache = false))
         val viewModel = createViewModel()
         viewModel.onInstallmentToggled(1)
         coEvery { repayLoanUseCase(1, 103_000) } returns Result.failure(IllegalStateException("Minimum pembayaran belum tercapai"))
@@ -127,7 +128,7 @@ class HistoryViewModelTest {
 
     @Test
     fun `consumePaymentMessage nulls the pending message`() = runTest {
-        coEvery { getLoanHistoryUseCase() } returns Result.success(listOf(item(loanId = 1)))
+        coEvery { getLoanHistoryUseCase() } returns Result.success(Cached(listOf(item(loanId = 1)), isFromCache = false))
         val viewModel = createViewModel()
         viewModel.onInstallmentToggled(1)
         coEvery { repayLoanUseCase(1, 103_000) } returns Result.success(item(loanId = 1))

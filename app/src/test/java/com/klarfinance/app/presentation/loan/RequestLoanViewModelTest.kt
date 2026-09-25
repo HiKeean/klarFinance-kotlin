@@ -184,6 +184,9 @@ class RequestLoanViewModelTest {
         coEvery { getLimitSummaryUseCase() } returns Result.success(limitSummary)
         coEvery { getSavedBankAccountsUseCase() } returns Result.success(emptyList())
         val viewModel = createViewModel()
+        viewModel.onAmountChange("500000")
+        viewModel.onBankAccountNumberChange("123456")
+        viewModel.onSubmitClick(mockk<androidx.fragment.app.FragmentActivity>(relaxed = true))
         viewModel.onPasswordInputChange("wrongpass")
         coEvery { verifyPasswordUseCase("wrongpass") } returns Result.failure(IllegalStateException("Password salah"))
 

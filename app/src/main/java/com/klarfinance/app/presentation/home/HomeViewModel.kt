@@ -58,6 +58,10 @@ class HomeViewModel @Inject constructor(
     private val _limitSummary = MutableStateFlow<LimitSummary?>(null)
     val limitSummary: StateFlow<LimitSummary?> = _limitSummary.asStateFlow()
 
+    /** Nama nasabah buat sapaan "Hi KlarFams, {nama}" - null untuk GUEST (belum ada profil). */
+    private val _userName = MutableStateFlow<String?>(null)
+    val userName: StateFlow<String?> = _userName.asStateFlow()
+
     init {
         if (initialAccountState == AccountState.ACTIVE) {
             viewModelScope.launch { refreshLimitSummary() }
@@ -66,6 +70,9 @@ class HomeViewModel @Inject constructor(
         // GUEST has no session/token to query a status for - only listen once there's actually
         // an account, matching every other gate on this screen (see HomeScreen.onLockedFeatureClick).
         if (initialAccountState != AccountState.GUEST) {
+            viewModelScope.launch {
+                getProfileUseCase().onSuccess { cached -> _userName.value = cached.value.name }
+            }
             viewModelScope.launch {
                 fcmEventBus.events.collect { event ->
                     when (event.type) {
@@ -95,6 +102,7 @@ class HomeViewModel @Inject constructor(
         // source of truth for what AccountState actually is right now (see AccountProfile.accountState).
         getProfileUseCase().onSuccess { cached ->
             _accountState.value = cached.value.accountState
+            _userName.value = cached.value.name
             // A BM approval push is exactly the moment PENDING_APPLICATION -> ACTIVE happens,
             // i.e. the moment an ActiveLimit (and therefore a fetchable limit summary) starts
             // existing - fetch it now instead of waiting for the next cold Home.

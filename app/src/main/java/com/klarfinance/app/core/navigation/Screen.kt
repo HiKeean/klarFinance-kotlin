@@ -2,6 +2,7 @@ package com.klarfinance.app.core.navigation
 
 import com.klarfinance.app.domain.model.AccountState
 import com.klarfinance.app.domain.model.FeatureCategoryKey
+import com.klarfinance.app.domain.model.OtpChannel
 
 sealed class Screen(val route: String) {
     data object Splash : Screen("splash")
@@ -65,9 +66,10 @@ sealed class Screen(val route: String) {
     data object TransjakartaHome : Screen("transjakarta/home")
     data object TransjakartaConfirm : Screen("transjakarta/confirm")
 
-    data object OtpVerification : Screen("otp/{phone}") {
+    data object OtpVerification : Screen("otp/{phone}?channel={channel}") {
         const val ARG_PHONE = "phone"
-        fun createRoute(phone: String) = "otp/$phone"
+        const val ARG_CHANNEL = "channel"
+        fun createRoute(phone: String, channel: OtpChannel = OtpChannel.WHATSAPP) = "otp/$phone?channel=${channel.name}"
     }
     data object PasswordLogin : Screen("password-login/{phone}") {
         const val ARG_PHONE = "phone"

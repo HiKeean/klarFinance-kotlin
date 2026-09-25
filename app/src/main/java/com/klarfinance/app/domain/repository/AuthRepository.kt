@@ -4,12 +4,14 @@ import com.klarfinance.app.domain.model.AccountProfile
 import com.klarfinance.app.domain.model.AccountState
 import com.klarfinance.app.domain.model.Cached
 import com.klarfinance.app.domain.model.LoginResult
+import com.klarfinance.app.domain.model.OtpChannel
 import com.klarfinance.app.domain.model.RegisterResult
 import okhttp3.MultipartBody
 
 interface AuthRepository {
-    suspend fun requestOtp(phone: String): Result<Unit>
+    suspend fun requestOtp(phone: String): Result<OtpChannel>
     suspend fun verifyOtp(phone: String, otp: String): Result<Unit>
+    suspend fun verifyFirebasePhone(phone: String, idToken: String): Result<Unit>
     suspend fun isPhoneRegistered(phone: String): Result<Boolean>
     suspend fun login(identity: String, password: String): Result<LoginResult>
 

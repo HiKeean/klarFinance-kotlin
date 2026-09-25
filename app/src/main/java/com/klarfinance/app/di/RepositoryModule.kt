@@ -1,5 +1,7 @@
 package com.klarfinance.app.di
 
+import com.klarfinance.app.core.auth.FirebaseSmsOtpSender
+import com.klarfinance.app.core.auth.SmsOtpSender
 import com.klarfinance.app.data.repository.AuthRepositoryImpl
 import com.klarfinance.app.data.repository.LoanRepositoryImpl
 import com.klarfinance.app.data.repository.LocationRepositoryImpl
@@ -29,6 +31,10 @@ abstract class RepositoryModule {
     @Binds
     @Singleton
     abstract fun bindAuthRepository(impl: AuthRepositoryImpl): AuthRepository
+
+    /** Sengaja tidak @Singleton - menyimpan verificationId per alur OTP (satu instance per OtpViewModel). */
+    @Binds
+    abstract fun bindSmsOtpSender(impl: FirebaseSmsOtpSender): SmsOtpSender
 
     @Binds
     @Singleton
