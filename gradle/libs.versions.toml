@@ -11,6 +11,7 @@ hilt = "2.52"
 hiltNavigationCompose = "1.2.0"
 okhttp = "4.12.0"
 chucker = "4.1.0"
+rootbeer = "0.1.2"
 kotlinxSerializationJson = "1.7.3"
 coroutines = "1.9.0"
 room = "2.6.1"
@@ -54,6 +55,7 @@ hilt-navigation-compose = { group = "androidx.hilt", name = "hilt-navigation-com
 okhttp-core = { group = "com.squareup.okhttp3", name = "okhttp", version.ref = "okhttp" }
 okhttp-logging-interceptor = { group = "com.squareup.okhttp3", name = "logging-interceptor", version.ref = "okhttp" }
 chucker = { group = "com.github.chuckerteam.chucker", name = "library", version.ref = "chucker" }
+rootbeer = { group = "com.scottyab", name = "rootbeer-lib", version.ref = "rootbeer" }
 chucker-no-op = { group = "com.github.chuckerteam.chucker", name = "library-no-op", version.ref = "chucker" }
 kotlinx-serialization-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "kotlinxSerializationJson" }
 kotlinx-coroutines-android = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-android", version.ref = "coroutines" }
