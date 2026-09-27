@@ -1,6 +1,7 @@
 package com.klarfinance.app.core.auth
 
 import android.app.Activity
+import android.util.Log
 import com.google.android.gms.tasks.Task
 import com.google.firebase.FirebaseException
 import com.google.firebase.FirebaseTooManyRequestsException
@@ -36,6 +37,7 @@ class FirebaseSmsOtpSender @Inject constructor() : SmsOtpSender {
                 }
 
                 override fun onVerificationFailed(e: FirebaseException) {
+                    Log.w("FirebaseSmsOtpSender", "verifyPhoneNumber failed", e)
                     onEvent(SmsOtpEvent.Failed(sendErrorMessage(e)))
                 }
 
@@ -72,7 +74,9 @@ class FirebaseSmsOtpSender @Inject constructor() : SmsOtpSender {
     private fun sendErrorMessage(e: FirebaseException): String = when (e) {
         is FirebaseTooManyRequestsException -> "Too many SMS requests. Please try again later"
         is FirebaseAuthInvalidCredentialsException -> "Invalid phone number"
-        else -> "Failed to send SMS code"
+        // Detail Firebase ikut ditampilkan - penyebab umum: SHA-1/SHA-256 app belum didaftarkan di
+        // Firebase Console, provider Phone belum di-enable, atau project belum Blaze.
+        else -> "Failed to send SMS code: ${e.message}"
     }
 }
 

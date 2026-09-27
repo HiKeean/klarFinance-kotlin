@@ -65,6 +65,14 @@ class KlarFirebaseMessagingService : FirebaseMessagingService() {
             return
         }
 
+        // OTP login via push (backend AuthService#requestOtp, channel PUSH) - data-only, jadi
+        // notifikasinya ditampilkan sendiri. Sengaja gak auto-isi: nasabah ketik manual dari notifikasi.
+        if (message.data["type"] == "OTP") {
+            val otp = message.data["otp"] ?: return
+            showNotification("KlarFinance", "Kode OTP kamu: $otp. Jangan bagikan kode ini ke siapa pun.")
+            return
+        }
+
         // Data payload is delivered regardless of app state (foreground/background), unlike
         // the notification{} block which the system tray swallows itself when backgrounded -
         // this is what lets a screen that's currently open react (refresh) instead of only

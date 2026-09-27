@@ -5,6 +5,8 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class RequestOtpRequestDto(
     val phone: String,
+    /** Backend kirim OTP sebagai push FCM ke token ini kalau WhatsApp dimatikan/gagal. */
+    val fcmToken: String? = null,
 )
 
 @Serializable

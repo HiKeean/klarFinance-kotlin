@@ -1,11 +1,14 @@
 package com.klarfinance.app.di
 
+import android.content.Context
+import com.chuckerteam.chucker.api.ChuckerInterceptor
 import com.klarfinance.app.BuildConfig
 import com.klarfinance.app.core.network.AuthInterceptor
 import com.klarfinance.app.core.network.HmacInterceptor
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import kotlinx.serialization.json.Json
 import okhttp3.OkHttpClient
@@ -27,6 +30,7 @@ object NetworkModule {
     @Provides
     @Singleton
     fun provideOkHttpClient(
+        @ApplicationContext context: Context,
         hmacInterceptor: HmacInterceptor,
         authInterceptor: AuthInterceptor,
     ): OkHttpClient {
@@ -41,6 +45,8 @@ object NetworkModule {
             .addInterceptor(hmacInterceptor)
             .addInterceptor(authInterceptor)
             .addInterceptor(logging)
+            // Setelah hmac/auth biar header X-Signature/Authorization ikut kelihatan di Chucker.
+            .addInterceptor(ChuckerInterceptor.Builder(context).build())
             .connectTimeout(15, TimeUnit.SECONDS)
             .readTimeout(15, TimeUnit.SECONDS)
             .writeTimeout(15, TimeUnit.SECONDS)

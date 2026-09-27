@@ -126,10 +126,10 @@ private fun OtpVerificationContent(
             )
             Spacer(modifier = Modifier.height(8.dp))
             Text(
-                text = if (uiState.channel == OtpChannel.SMS) {
-                    "Enter the 6-digit code sent via SMS"
-                } else {
-                    "Enter the 6-digit code sent to your WhatsApp"
+                text = when (uiState.channel) {
+                    OtpChannel.SMS -> "Enter the 6-digit code sent via SMS"
+                    OtpChannel.PUSH -> "Enter the 6-digit code sent to your notifications"
+                    OtpChannel.WHATSAPP -> "Enter the 6-digit code sent to your WhatsApp"
                 },
                 style = MaterialTheme.typography.bodyLarge,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,

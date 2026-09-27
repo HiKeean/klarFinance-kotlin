@@ -176,6 +176,9 @@ dependencies {
 
     implementation(libs.okhttp.core)
     implementation(libs.okhttp.logging.interceptor)
+    // Inspector HTTP (notifikasi "Recording HTTP activity") - debug only, release pakai no-op.
+    debugImplementation(libs.chucker)
+    releaseImplementation(libs.chucker.no.op)
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.kotlinx.coroutines.android)
 

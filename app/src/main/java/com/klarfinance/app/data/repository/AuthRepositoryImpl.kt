@@ -46,12 +46,17 @@ class AuthRepositoryImpl @Inject constructor(
     private val referralSummaryDao: ReferralSummaryDao,
 ) : AuthRepository {
 
-    /** Backend balas channel FIREBASE_SMS kalau kirim WhatsApp gagal - app lanjut OTP via SMS Firebase. */
+    /** Backend balas channel PUSH kalau WhatsApp dimatikan/gagal (OTP dikirim sebagai push FCM ke
+     * token device ini), atau FIREBASE_SMS kalau token FCM gak tersedia - app lanjut OTP via SMS Firebase. */
     override suspend fun requestOtp(phone: String): Result<OtpChannel> = runCatching {
         val response = apiService.post<RequestOtpResponseDataDto, RequestOtpRequestDto>(
-            "api/v1/auth/request-otp", RequestOtpRequestDto(phone),
+            "api/v1/auth/request-otp", RequestOtpRequestDto(phone, fetchFcmToken()),
         )
-        if (response.data?.channel == "FIREBASE_SMS") OtpChannel.SMS else OtpChannel.WHATSAPP
+        when (response.data?.channel) {
+            "PUSH" -> OtpChannel.PUSH
+            "FIREBASE_SMS" -> OtpChannel.SMS
+            else -> OtpChannel.WHATSAPP
+        }
     }
 
     override suspend fun verifyFirebasePhone(phone: String, idToken: String): Result<Unit> = runCatching {
@@ -104,14 +109,19 @@ class AuthRepositoryImpl @Inject constructor(
      * discarded) - a push-notification token sync should never fail the login flow itself. */
     private suspend fun syncFcmToken() {
         runCatching {
-            val token = suspendCancellableCoroutine<String?> { continuation ->
-                FirebaseMessaging.getInstance().token.addOnCompleteListener { task ->
-                    if (continuation.isActive) continuation.resume(if (task.isSuccessful) task.result else null)
-                }
-            }
+            val token = fetchFcmToken()
             if (token != null) updateFcmToken(token)
         }
     }
+
+    /** null kalau FCM gagal kasih token (mis. Play Services gak ada) - gak pernah throw. */
+    private suspend fun fetchFcmToken(): String? = runCatching {
+        suspendCancellableCoroutine<String?> { continuation ->
+            FirebaseMessaging.getInstance().token.addOnCompleteListener { task ->
+                if (continuation.isActive) continuation.resume(if (task.isSuccessful) task.result else null)
+            }
+        }
+    }.getOrNull()
 
     override suspend fun getProfile(): Result<Cached<AccountProfile>> {
         val networkResult = runCatching {

@@ -61,7 +61,7 @@ class OtpViewModel @Inject constructor(
 
     init {
         // Jalur SMS: countdown baru jalan setelah Firebase benar-benar mengirim SMS (SmsOtpEvent.CodeSent).
-        if (initialChannel == OtpChannel.WHATSAPP) startCountdown()
+        if (initialChannel != OtpChannel.SMS) startCountdown()
     }
 
     fun onOtpChange(value: String) {
@@ -105,7 +105,7 @@ class OtpViewModel @Inject constructor(
                     if (channel == OtpChannel.SMS) {
                         _uiState.update { it.copy(isLoading = false, otp = "", channel = OtpChannel.SMS, smsSendPending = true) }
                     } else {
-                        _uiState.update { it.copy(isLoading = false, otp = "") }
+                        _uiState.update { it.copy(isLoading = false, otp = "", channel = channel) }
                         startCountdown()
                     }
                 }
