@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
@@ -97,7 +98,7 @@ fun QrisAmountScreen(
         },
         bottomBar = {
             if (!uiState.isScanning && uiState.scanErrorMessage == null) {
-                Column(modifier = Modifier.padding(20.dp)) {
+                Column(modifier = Modifier.navigationBarsPadding().padding(20.dp)) {
                     Button(
                         onClick = { activity?.let(viewModel::onSubmitClick) },
                         enabled = uiState.isFormValid && !uiState.isSubmitting,

@@ -23,6 +23,7 @@ import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
@@ -139,7 +140,7 @@ fun CameraCaptureScreen(
             PermissionRationale(onGrantClick = { permissionLauncher.launch(Manifest.permission.CAMERA) })
         }
 
-        Column(modifier = Modifier.fillMaxSize()) {
+        Column(modifier = Modifier.fillMaxSize().navigationBarsPadding()) {
             CaptureTopBar(onBackClick = onBackClick)
 
             Spacer(modifier = Modifier.height(24.dp))

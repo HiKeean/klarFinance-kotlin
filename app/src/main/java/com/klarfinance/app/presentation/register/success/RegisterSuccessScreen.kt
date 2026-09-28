@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.Spacer
@@ -31,7 +32,7 @@ import com.klarfinance.app.core.theme.KlarTeal
 @Composable
 fun RegisterSuccessScreen(onDashboardClick: () -> Unit) {
     Box(
-        modifier = Modifier.fillMaxSize().background(KlarBackground).padding(24.dp),
+        modifier = Modifier.fillMaxSize().background(KlarBackground).navigationBarsPadding().padding(24.dp),
         contentAlignment = Alignment.Center,
     ) {
         Column(
