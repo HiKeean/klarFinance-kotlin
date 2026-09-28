@@ -27,6 +27,10 @@ const val POPULAR_TENOR = 12
 
 private const val REVIEW_THRESHOLD_PERCENT = 30.0
 
+/** Minimal nominal pinjaman tunai (konfirmasi user 2026-09-28) - mirror
+ * LoanInterestPolicy.MIN_CASH_LOAN_AMOUNT di backend. Hanya untuk tarik tunai, bukan QRIS. */
+const val MIN_CASH_LOAN_AMOUNT = 100_000L
+
 /** Mirror LoanInterestPolicy.MONTHLY_RATE_PERCENT_BY_TENOR (backend) - bunga flat per bulan
  * berdasarkan tenor, dikali jumlah bulan buat total bunga selama tenor (tidak majemuk). */
 private val MONTHLY_RATE_PERCENT_BY_TENOR = mapOf(
@@ -76,7 +80,16 @@ data class RequestLoanUiState(
 
     /** Langkah 1 (nominal + tenor) - tenor selalu punya default jadi cukup cek nominal. */
     val isAmountStepValid: Boolean
-        get() = amount > 0 && limitSummary?.let { amount <= it.availableLimit } != false
+        get() = amount >= MIN_CASH_LOAN_AMOUNT && limitSummary?.let { amount <= it.availableLimit } != false
+
+    /** Pesan error di bawah field nominal - null selama belum diisi atau sudah valid. */
+    val amountErrorMessage: String?
+        get() = when {
+            amount <= 0 -> null
+            amount < MIN_CASH_LOAN_AMOUNT -> "Minimal pinjaman tunai Rp100.000"
+            limitSummary != null && amount > limitSummary.availableLimit -> "Nominal melebihi limit tersedia"
+            else -> null
+        }
 
     /** Langkah 2 (rekening tujuan) - dipanggil pas mau submit beneran. Kalau punya rekening
      * tersimpan, valid begitu salah satu dipilih dari dropdown; kalau belum punya sama sekali,
@@ -111,7 +124,7 @@ data class RequestLoanUiState(
             if (available <= 0) return emptyList()
             return listOf(0.25, 0.5, 1.0)
                 .map { fraction -> roundDownToNearest((available * fraction).toLong(), 50_000L) }
-                .filter { it > 0 }
+                .filter { it >= MIN_CASH_LOAN_AMOUNT }
                 .distinct()
         }
 

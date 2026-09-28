@@ -50,6 +50,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.klarfinance.app.core.theme.KlarTeal
+import com.klarfinance.app.presentation.loan.MIN_CASH_LOAN_AMOUNT
 import com.klarfinance.app.presentation.loan.POPULAR_TENOR
 import com.klarfinance.app.presentation.loan.RequestLoanUiState
 import com.klarfinance.app.presentation.loan.RequestLoanViewModel
@@ -120,10 +121,15 @@ fun LoanAmountScreen(
             ) {
                 AmountField(uiState = uiState, onAmountChange = viewModel::onAmountChange)
 
+                uiState.amountErrorMessage?.let { error ->
+                    Spacer(modifier = Modifier.height(6.dp))
+                    Text(error, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.error)
+                }
+
                 uiState.limitSummary?.let { limit ->
                     Spacer(modifier = Modifier.height(6.dp))
                     Text(
-                        "Limit tersedia: ${formatRupiah(limit.availableLimit)}",
+                        "Minimal ${formatRupiah(MIN_CASH_LOAN_AMOUNT)} · Limit tersedia: ${formatRupiah(limit.availableLimit)}",
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )

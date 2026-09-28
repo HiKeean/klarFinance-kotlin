@@ -18,6 +18,14 @@ class RequestLoanUiStateTest {
     }
 
     @Test
+    fun `isAmountStepValid rejects an amount below the 100000 cash loan minimum`() {
+        assertFalse(RequestLoanUiState(amountInput = "99999").isAmountStepValid)
+        assertEquals("Minimal pinjaman tunai Rp100.000", RequestLoanUiState(amountInput = "99999").amountErrorMessage)
+        assertEquals(null, RequestLoanUiState(amountInput = "100000").amountErrorMessage)
+        assertEquals(null, RequestLoanUiState(amountInput = "").amountErrorMessage)
+    }
+
+    @Test
     fun `isAmountStepValid rejects an amount above the available limit`() {
         val summary = LimitSummary(totalLimit = 1_000_000, usedLimit = 0, availableLimit = 500_000)
         assertFalse(RequestLoanUiState(amountInput = "600000", limitSummary = summary).isAmountStepValid)
@@ -77,12 +85,12 @@ class RequestLoanUiStateTest {
     }
 
     @Test
-    fun `amountPresets drops presets that round down to zero`() {
-        val summary = LimitSummary(totalLimit = 120_000, usedLimit = 0, availableLimit = 120_000)
+    fun `amountPresets drops presets below the cash loan minimum`() {
+        val summary = LimitSummary(totalLimit = 220_000, usedLimit = 0, availableLimit = 220_000)
         val state = RequestLoanUiState(limitSummary = summary)
 
-        // 25% of 120000 = 30000 -> rounds down to 0 and is dropped
-        assertEquals(listOf(50_000L, 100_000L), state.amountPresets)
+        // 25% of 220000 -> 50000 and 50% -> 100000; 50000 is below the Rp100.000 minimum and is dropped
+        assertEquals(listOf(100_000L, 200_000L), state.amountPresets)
     }
 
     @Test
